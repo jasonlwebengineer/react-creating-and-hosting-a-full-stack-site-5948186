@@ -50,7 +50,7 @@ const articles = [
           consequat quam. Vivamus accumsan dui in facilisis aliquet.`,
       ]
   },     {
-      name: 'mongodb',
+      name: 'learn-mongo-db',
       title: 'Learn MongoDB',
       summary: 'A introduction into the world of Mongo DB coding',
       content: [

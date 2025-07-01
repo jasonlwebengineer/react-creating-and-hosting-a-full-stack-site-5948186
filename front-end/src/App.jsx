@@ -1,8 +1,9 @@
 import { 
   createBrowserRouter,
-  RouterProvider
+  RouterProvider,
+  useParams
 } from 'react-router-dom'
-
+import axios from 'axios'
 import './App.css'
 import HomePage from './pages/HomePage'
 import AboutPage from './pages/AboutPage'
@@ -30,7 +31,12 @@ const routes = [{
     },
     {
       path: '/articles/:name',
-      element: <ArticlePage />
+      element: <ArticlePage />,
+      loader: async function({params}) {
+        const response = await axios.get(`/api/articles/${params.name}`);
+        const { upvotes, comments } = response.data;
+        return { upvotes, comments };
+      }
     }
   ]
 }]

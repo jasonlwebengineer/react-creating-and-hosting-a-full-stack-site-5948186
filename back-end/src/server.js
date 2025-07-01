@@ -8,7 +8,7 @@ const articleInfo = [
   },
   {
     name: 'learn-node',
-    upvotes: 0,
+    upvotes: 2,
     comments: []
   },
   {
@@ -22,17 +22,11 @@ const app = express();
 
 app.use(express.json());
 
-// app.get('/hello', function(req, res) {
-//   res.send(`Hello ${req.body.name} this is a Get`);
-// });
-
-// app.get('/hello/:name', function(req, res) {
-//   res.send(`Hello this is a ${req.params.name} article`);
-// });
-
-// app.post('/hello', function(req, res) {
-//   res.send(`Hello ${req.body.name} this is a Post`);
-// });
+app.get('/api/articles/:name', async (req, res) => {
+  const { name } = req.params;
+  const article = articleInfo.find(a => a.name === req.params.name);
+  res.json(article);
+});
 
 app.post('/api/articles/:name/upvote', (req, res) => {
   const article = articleInfo.find(a => a.name === req.params.name);
