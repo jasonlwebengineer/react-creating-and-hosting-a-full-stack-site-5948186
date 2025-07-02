@@ -9,9 +9,9 @@ function ArticlesList(props) {
     <>
       {aList.map(a => (
         <>
-        <h3>{a.title}</h3>
-        <p>{a.summary}</p>
-        <Link key={a.name} to={'/articles/' + a.name}><p>Open {a.name}</p></Link>
+        <h3 key={"title_" + a.name}>{a.title}</h3>
+        <p key={"summary_" + a.name}>{a.summary}</p>
+        <Link key={"name_" + a.name} to={'/articles/' + a.name}><p key={"text_" + a.name}>Open {a.name}</p></Link>
         </>
       ))}
     </>
