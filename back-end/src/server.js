@@ -1,58 +1,53 @@
 import express from 'express';
+import { MongoClient, ReturnDocument } from 'mongodb'
 
-const articleInfo = [
-  {
-    name: 'learn-react',
-    upvotes: 0,
-    comments: []
-  },
-  {
-    name: 'learn-node',
-    upvotes: 0,
-    comments: []
-  },
-  {
-    name: 'learn-mongo-db',
-    upvotes: 0,
-    comments: []
-  }
-]
 
 const app = express();
 
 app.use(express.json());
 
-// app.get('/hello', function(req, res) {
-//   res.send(`Hello ${req.body.name} this is a Get`);
-// });
+let db;
 
-// app.get('/hello/:name', function(req, res) {
-//   res.send(`Hello this is a ${req.params.name} article`);
-// });
+async function connetToDB() {
+  const url = `mongodb+srv://jasonlwebengineer:ZHEGxd7ojBviuADv@cluster0.xzus52o.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
+  const client = new MongoClient(url);
+  await client.connect();
+  db = client.db('full-stack-react-db');
+}
 
-// app.post('/hello', function(req, res) {
-//   res.send(`Hello ${req.body.name} this is a Post`);
-// });
-
-app.post('/api/articles/:name/upvote', (req, res) => {
-  const article = articleInfo.find(a => a.name === req.params.name);
-  article.upvotes += 1;
-  res.send(`The article ${req.params.name} now has ${article.upvotes} upvotes`);
+app.get('/api/articles/:name', async function(req, res) {
+  const { name } = req.params;
+  const article = await db.collection('articles').findOne({ name })
+  res.json(article);
 });
 
-app.post('/api/articles/:name/comments', (req, res) => {
+app.post('/api/articles/:name/upvote', async (req, res) => {
+  const { name } = req.params;
+  const updatedArticle = await db.collection('articles').findOneAndUpdate(
+    { name }, 
+    { $inc: { upvotes: 1 }},
+    { returnDocument: "after" });
+
+  res.json(updatedArticle)
+});
+
+app.post('/api/articles/:name/comments', async (req, res) => {
   const { name } = req.params;
   const { postedBy, text } = req.body;
-  const article = articleInfo.find(a => a.name === name);
+  const newComment = { postedBy, text }
 
-  article.comments.push({
-    postedBy,
-    text,
+  const updatedArticle = await db.collection('articles').findOneAndUpdate({ name }, 
+    { $push: { comments: newComment }},
+    { returnDocument: "after" });
+
+  res.json(updatedArticle);   
+});
+
+async function start() {
+  await connetToDB();
+  app.listen(8000, function() {
+    console.log('server up');
   });
+}
 
-  res.json(article.comments);
-});
-
-app.listen(8000, function() {
-  console.log('server up');
-});
+start();
